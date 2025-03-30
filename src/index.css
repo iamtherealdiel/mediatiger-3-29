@@ -165,4 +165,7 @@
 .cards-dashboard {
   z-index:  0!important;
   position: relative!important;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
 }
