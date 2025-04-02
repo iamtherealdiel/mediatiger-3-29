@@ -1,19 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import {
-  ArrowLeft,
-  Lock,
-  Database,
-  RefreshCw,
-  UserCheck,
-  UserX,
-  FileSpreadsheet,
-  MessageSquare,
-  Bell,
-  LucideYoutube,
-  User2,
-  FlagIcon,
-} from "lucide-react";
+
 import {
   lookupUserBySecureId,
   isValidSecureId,
@@ -31,6 +18,7 @@ import { ApplicationsTab } from "../components/admin/ApplicationsTab";
 import { NotificationsTab } from "../components/admin/NotificationsTab";
 import { YouTubeChannelsTab } from "../components/admin/YouTubeChannelsTab";
 export const adminId = "26c83260-54f6-4dd4-bc65-d21e7e52632b";
+import { handleApplicationStatus } from "../services/applicationService";
 type UserLookupData = {
   id: string;
   email: string;
@@ -98,6 +86,7 @@ export default function AdminPanel() {
   }, [activeTab, applicationFilter]);
 
   const loadApplications = async () => {
+    console.log("working!");
     setIsLoadingApplications(true);
     try {
       const { data, error } = await supabase
@@ -132,7 +121,7 @@ export default function AdminPanel() {
       setIsLoadingApplications(false);
     }
   };
-  const handleApplicationStatus = async (
+  /*  const handleApplicationStatus = async (
     id: string,
     status: "approved" | "rejected",
     reason?: string
@@ -179,7 +168,7 @@ export default function AdminPanel() {
       console.error("Error updating application status:", err);
       toast.error("Failed to update application status");
     }
-  };
+  }; */
 
   const handleReject = (id: string) => {
     setSelectedApplicationId(id);
@@ -217,49 +206,6 @@ export default function AdminPanel() {
     }
   };
 
-  const handleSecureIdLookup = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!secureId.trim()) {
-      setUserLookupError("Please enter a secure ID");
-      return;
-    }
-
-    if (!isValidSecureId(secureId)) {
-      setUserLookupError(
-        "Invalid secure ID format. IDs can only contain numbers, letters, commas, periods, underscores and dashes, with a maximum length of 64 characters."
-      );
-      return;
-    }
-
-    setIsLookingUp(true);
-    setUserData(null);
-    setUserLookupError("");
-
-    try {
-      const { data, error } = await lookupUserBySecureId(
-        secureId,
-        lookupReason
-      );
-
-      if (error) {
-        setUserLookupError(error);
-      } else if (data) {
-        setUserData(data as UserLookupData);
-        toast.success("User found successfully");
-      } else {
-        setUserLookupError("No user found with this secure ID");
-      }
-    } catch (err: any) {
-      console.error("Error looking up secure ID:", err);
-      setUserLookupError(
-        err.message || "An error occurred while looking up the secure ID"
-      );
-    } finally {
-      setIsLookingUp(false);
-    }
-  };
-
   // Admin dashboard
   return (
     <div className="min-h-screen bg-slate-900 p-2 md:p-8">
@@ -286,11 +232,30 @@ export default function AdminPanel() {
             {/* Applications tab */}
             {activeTab === "applications" && (
               <ApplicationsTab
+                handleApplicationStatus={(id, status, reason) => {
+                  handleApplicationStatus({
+                    id: id,
+                    status: status,
+                    adminId: adminId,
+                    reason: reason ?? "rejected",
+                    activeTab: activeTab,
+                    onSuccess: {
+                      loadApplications: loadApplications,
+                      setRejectionReason: setRejectionReason,
+                      setSelectedApplicationId: setSelectedApplicationId,
+                      setShowRejectionModal: setShowRejectionModal,
+                    },
+                  });
+                }}
                 applicationFilter={applicationFilter}
                 applications={applications}
                 isLoadingApplications={isLoadingApplications}
                 loadApplications={loadApplications}
                 setApplicationFilter={setApplicationFilter}
+                showRejectionModal={showRejectionModal}
+                setRejectionReason={setRejectionReason}
+                rejectionReason={rejectionReason}
+                setShowRejectionModal={setShowRejectionModal}
               />
             )}
 
@@ -303,7 +268,10 @@ export default function AdminPanel() {
                 loadApplications={loadApplications}
                 isLoadingApplications={isLoadingApplications}
                 channelsRequests={channelsRequests}
-                handleApplicationStatus={handleApplicationStatus}
+                handleApplicationStatus={(id, status) => {
+                  console.log(id, status);
+                  //  handleApplicationStatus({id:})
+                }}
                 handleReject={handleReject}
               />
             )}

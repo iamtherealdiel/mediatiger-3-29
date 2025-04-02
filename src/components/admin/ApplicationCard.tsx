@@ -12,8 +12,8 @@ interface ApplicationCardProps {
     status: string;
     created_at: string;
   };
-  onApprove?: (id: string) => void;
-  onReject?: (id: string) => void;
+  onApprove?: (id: string, status: string) => void;
+  onReject?: (id: string, status: string) => void;
 }
 
 export const ApplicationCard: React.FC<ApplicationCardProps> = ({
@@ -32,14 +32,14 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
           {app.status === "pending" && (
             <>
               <button
-                onClick={() => onApprove?.(app.id)}
+                onClick={() => onApprove?.(app.id, "approve")}
                 className="px-4 py-2 bg-green-600/90 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center shadow-lg shadow-green-500/10 hover:shadow-green-500/20"
               >
                 <UserCheck className="h-4 w-4 mr-1" />
                 Approve
               </button>
               <button
-                onClick={() => onReject?.(app.id)}
+                onClick={() => onReject?.(app.id, "reject")}
                 className="px-4 py-2 bg-red-600/90 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center shadow-lg shadow-red-500/10 hover:shadow-red-500/20"
               >
                 <UserX className="h-4 w-4 mr-1" />
