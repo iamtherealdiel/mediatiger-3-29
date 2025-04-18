@@ -1,22 +1,21 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import {
-  Play,
-  Shield,
   ArrowRight,
-  Users,
   Building2,
-  Menu,
-  X,
   DollarSign,
   GraduationCap,
-  Award,
-  Star,
   Lock,
+  Menu,
+  Play,
+  Shield,
+  Star,
+  Users,
+  X,
 } from "lucide-react";
-import ThemeToggle from "../components/ThemeToggle";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { Link, useNavigate } from "react-router-dom";
 import { submitForm } from "../api/submitForm";
+import ThemeToggle from "../components/ThemeToggle";
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -766,27 +765,31 @@ export default function HomePage() {
               Have questions? We're here to help. Reach out to our team by
               filling out the form below.
             </p>
-            <p className="mt-6 inline-flex items-center px-6 py-3 rounded-full bg-slate-100 dark:bg-slate-800 text-lg text-slate-600 dark:text-slate-300 shadow-lg hover:shadow-xl transition-shadow">
-              <svg
-                className="w-5 h-5 mr-2 text-indigo-500"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                />
-              </svg>
-              <span className="mr-2">Email us directly at</span>
-              <a
-                href="mailto:support@mediatiger.co"
-                className="font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
-              >
-                support@mediatiger.co
-              </a>
+            <p className="mt-6 max-w-3xl inline-flex items-center px-6 py-3 rounded-full bg-slate-100 dark:bg-slate-800 text-lg text-slate-600 dark:text-slate-300 shadow-lg hover:shadow-xl transition-shadow">
+              <div className="flex flex-col items-center w-full">
+                <div className="flex items-center w-full">
+                  <svg
+                    className="w-5 h-5 mr-2 text-indigo-500"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
+                  </svg>
+                  <span className="mr-2">Email us directly at </span>
+                </div>
+                <a
+                  href="mailto:support@mediatiger.co"
+                  className="font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
+                >
+                  support@mediatiger.co
+                </a>
+              </div>
             </p>
           </div>
 
