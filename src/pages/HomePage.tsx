@@ -765,8 +765,33 @@ export default function HomePage() {
               Have questions? We're here to help. Reach out to our team by
               filling out the form below.
             </p>
-            <p className="mt-6 max-w-3xl inline-flex items-center px-6 py-3 rounded-full bg-slate-100 dark:bg-slate-800 text-lg text-slate-600 dark:text-slate-300 shadow-lg hover:shadow-xl transition-shadow">
-              <div className="flex flex-col items-center w-full">
+            <p className="mt-6 inline-flex items-center px-6 py-3 rounded-full bg-slate-100 dark:bg-slate-800 text-lg text-slate-600 dark:text-slate-300 shadow-lg hover:shadow-xl transition-shadow">
+              {/* Desktop Layout */}
+              <div className="hidden sm:flex items-center">
+                <svg
+                  className="w-5 h-5 mr-2 text-indigo-500"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  />
+                </svg>
+                <span className="mr-2">Email us directly at</span>
+                <a
+                  href="mailto:support@mediatiger.co"
+                  className="font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
+                >
+                  support@mediatiger.co
+                </a>
+              </div>
+
+              {/* Mobile Layout */}
+              <div className="flex flex-col items-center w-full sm:hidden">
                 <div className="flex items-center w-full">
                   <svg
                     className="w-5 h-5 mr-2 text-indigo-500"
@@ -781,7 +806,7 @@ export default function HomePage() {
                       d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                     />
                   </svg>
-                  <span className="mr-2">Email us directly at </span>
+                  <span className="mr-2">Email us directly at</span>
                 </div>
                 <a
                   href="mailto:support@mediatiger.co"
@@ -789,7 +814,7 @@ export default function HomePage() {
                 >
                   support@mediatiger.co
                 </a>
-              </div>
+              </div>  
             </p>
           </div>
 
@@ -968,15 +993,14 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="bg-slate-100 dark:bg-slate-800 py-8 border-t border-slate-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-slate-600 dark:text-slate-300 font-medium">
+          <p className="text-slate-600 dark:text-slate-300 font-medium text-center justify-center">
             © MediaTiger 2025 All rights reserved.{" "}
             <button
               onClick={() => navigate("/purple-login")}
               className="inline-flex items-center px-4 py-2 text-sm font-medium text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors"
             >
-              <Lock className="w-4 h-4 mr-2" />
+              <Lock className="w-4 h-4 mr-2 mt-0" />
             </button>
-            <div className="flex items-center justify-center mt-4"></div>
           </p>
         </div>
       </footer>
