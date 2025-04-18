@@ -1,9 +1,8 @@
+import { AnimatePresence, motion } from "framer-motion";
+import { LogOut } from "lucide-react";
 import React, { useState } from "react";
-import { X, Check, LogOut, Copy, CheckCircle } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../lib/supabase";
+import { useAuth } from "../contexts/AuthContext";
 import {
   handleCopyVerification,
   handleFinalSubmit,
@@ -20,7 +19,7 @@ export default function OnboardingPopup({
   onClose,
   userId,
   userEmail,
-}: any) {
+}: { isOpen: boolean; onClose: () => void; userId: string; userEmail: string }) {
   const [step, setStep] = useState(1);
   const [interests, setInterests] = useState({
     channelManagement: false,
@@ -174,6 +173,7 @@ export default function OnboardingPopup({
               setIsVerifying={setIsVerifying}
               setChannelInfo={setChannelInfo}
               verifyChannel={verifyChannel}
+              setVerificationCopied={setVerificationCopied}
             />
           </div>
 

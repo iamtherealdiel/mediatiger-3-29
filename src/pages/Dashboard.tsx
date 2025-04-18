@@ -1,56 +1,51 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import {
+  CategoryScale,
+  Chart as ChartJS,
+  Filler,
+  Legend,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+} from "chart.js";
+import { Menu, MessageSquare, Settings } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { DashboardCards } from "../components/DashboardCards";
+import { NotificationDropdown } from "../components/NotificationDropdown";
+import OnboardingPopup from "../components/OnboardingPopup";
+import { PerformanceTrends } from "../components/PerformanceTrends";
+import { RealtimePerformance } from "../components/RealtimePerformance";
+import { RecentActivity } from "../components/RecentActivity";
+import { RejectedApplication } from "../components/RejectedApplication";
+import { SettingsDropdown } from "../components/SettingsDropdown";
+import Sidebar from "../components/SideBar";
+import UsernameSetupModal from "../components/UsernameSetupModal";
 import { useAuth } from "../contexts/AuthContext";
-import { navigationItems } from "../utils/navigationItems";
 import { supabase } from "../lib/supabase";
-import { getTypeIcon, NotificationItem } from "../utils/notifications";
-import { formatRelativeTime, formatNumber } from "../utils/dateUtils";
-import { clearNotifications, markAllAsRead } from "../utils/notificationUtils";
 import {
   checkUserIfBanned,
   fecthUserRequest,
   handleSignOut,
 } from "../utils/auth";
 import {
-  Settings,
-  MessageSquare,
-  Menu,
-  Users as UsersIcon,
-} from "lucide-react";
-import OnboardingPopup from "../components/OnboardingPopup";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler,
-} from "chart.js";
-import ChannelManagement from "./features/ChannelManagement";
-import BalanceSection from "./features/BalanceComponent";
-import UsernameSetupModal from "../components/UsernameSetupModal";
-import MonthlyGoals from "./features/GoalsComponent";
-import BannedComponent from "./features/BannedComponent";
-import { Announcements } from "./features/Announcement";
-import Sidebar from "../components/SideBar";
-import Messages from "./Messages";
-import { NotificationDropdown } from "../components/NotificationDropdown";
-import { SettingsDropdown } from "../components/SettingsDropdown";
-import { DashboardCards } from "../components/DashboardCards";
-import { RealtimePerformance } from "../components/RealtimePerformance";
-import { RecentActivity } from "../components/RecentActivity";
-import { PerformanceTrends } from "../components/PerformanceTrends";
-import { RejectedApplication } from "../components/RejectedApplication";
-import {
-  generateSampleActivity,
-  generateSampleGoals,
+  fetchDashboardStats,
   generatePerformanceData,
   generateRealtimeViews,
-  fetchDashboardStats,
+  generateSampleActivity,
+  generateSampleGoals,
 } from "../utils/dashboardUtils";
+import { formatRelativeTime } from "../utils/dateUtils";
+import { navigationItems } from "../utils/navigationItems";
+import { NotificationItem } from "../utils/notifications";
+import { clearNotifications, markAllAsRead } from "../utils/notificationUtils";
+import { Announcements } from "./features/Announcement";
+import BalanceSection from "./features/BalanceComponent";
+import BannedComponent from "./features/BannedComponent";
+import ChannelManagement from "./features/ChannelManagement";
+import MonthlyGoals from "./features/GoalsComponent";
+import Messages from "./Messages";
 
 // Register ChartJS components
 ChartJS.register(

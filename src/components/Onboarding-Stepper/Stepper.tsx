@@ -1,5 +1,5 @@
+import { Check, CheckCircle, Copy, X } from "lucide-react";
 import React from "react";
-import { Check, X, Copy, CheckCircle } from "lucide-react";
 
 export const Stepper: React.FC<any> = ({
   step,
@@ -20,6 +20,7 @@ export const Stepper: React.FC<any> = ({
   setIsVerifying,
   setChannelInfo,
   verifyChannel,
+  setVerificationCopied,
 }) => {
   return step === 1 ? (
     <>

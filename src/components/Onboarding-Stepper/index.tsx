@@ -24,9 +24,44 @@ export const showUniqueToast = (
 };
 
 export const handleCopyVerification = (setVerificationCopied, channelInfo) => {
-  navigator.clipboard.writeText(channelInfo.verificationCode);
-  setVerificationCopied(true);
-  setTimeout(() => setVerificationCopied(false), 2000);
+  if (!channelInfo.verificationCode) {
+    showUniqueToast("No verification code to copy", "error", "no-code");
+    return;
+  }
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard
+      .writeText(channelInfo.verificationCode)
+      .then(() => {
+        setVerificationCopied(true);
+        setTimeout(() => setVerificationCopied(false), 2000);
+      })
+      .catch(() => {
+        showUniqueToast(
+          "Failed to copy verification code",
+          "error",
+          "copy-failed"
+        );
+      });
+  } else {
+    // Fallback for unsupported browsers
+    const textarea = document.createElement("textarea");
+    textarea.value = channelInfo.verificationCode;
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand("copy");
+      setVerificationCopied(true);
+      setTimeout(() => setVerificationCopied(false), 2000);
+    } catch (err) {
+      showUniqueToast(
+        "Failed to copy verification code",
+        "error",
+        "copy-failed"
+      );
+    }
+    document.body.removeChild(textarea);
+  }
 };
 
 export const verifyChannel = async (
