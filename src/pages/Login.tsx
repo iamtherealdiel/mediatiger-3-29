@@ -72,8 +72,8 @@ export default function Login() {
       // Note: Success toast is now handled in AuthContext to avoid duplicates
       // Redirect to the originally requested page
       navigate(from, { replace: true });
-    } catch (error: any) {
-      const errorMessage = error.message || 'Invalid email or password';
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Invalid email or password';
       if (errorMessage.includes('credentials')) {
         setErrors({
           email: 'Invalid email or password',

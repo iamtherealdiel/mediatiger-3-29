@@ -3,8 +3,8 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import toast from "react-hot-toast";
-import { validateEmail } from "../utils/validation"; // Remove this line
 import { supabase } from "../lib/supabase";
+// import { validateEmail } from "../utils/validation";
 
 // Utility to prevent duplicate toasts
 const shownToasts = new Set<string>();
@@ -101,8 +101,9 @@ export default function PurpleLogin() {
       // Note: Success toast is now handled in AuthContext to avoid duplicates
       // Redirect to the originally requested page
       navigate(from, { replace: true });
-    } catch (error: any) {
-      const errorMessage = error.message || "Invalid username or password";
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Invalid username or password";
       if (errorMessage.includes("credentials")) {
         setErrors({
           username: "Invalid credentials",
@@ -129,7 +130,7 @@ export default function PurpleLogin() {
           </Link>
           <div className="flex items-center justify-center">
             <img
-              src="https://dlveiezovfooqbbfzfmo.supabase.co/storage/v1/object/public/Images//mtiger.png"
+              src="https://vaeuvecjtnvismnobvyy.supabase.co/storage/v1/object/public/images//mtiger.png"
               alt="MediaTiger Logo"
               className="h-20 w-20"
             />
