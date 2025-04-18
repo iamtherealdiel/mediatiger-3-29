@@ -214,7 +214,7 @@ export default function HomePage() {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
               <img
-                src="https://dlveiezovfooqbbfzfmo.supabase.co/storage/v1/object/public/Images//mtiger.png"
+                src="https://vaeuvecjtnvismnobvyy.supabase.co/storage/v1/object/public/images//mtiger.png"
                 alt="Media Tiger Logo"
                 className="h-8 w-8 mr-2"
               />

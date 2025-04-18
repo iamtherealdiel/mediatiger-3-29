@@ -221,7 +221,7 @@ export default function SignUp() {
           </Link>
           <div className="flex items-center justify-center">
             <img 
-              src="https://dlveiezovfooqbbfzfmo.supabase.co/storage/v1/object/public/Images//mtiger.png" 
+              src="https://vaeuvecjtnvismnobvyy.supabase.co/storage/v1/object/public/images//mtiger.png" 
               alt="MediaTiger Logo" 
               className="h-20 w-20"
             />

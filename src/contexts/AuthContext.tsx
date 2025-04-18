@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
-import { supabase, isCORSError } from "../lib/supabase";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { isCORSError, supabase } from "../lib/supabase";
 
 interface AuthContextType {
   user: User | null;

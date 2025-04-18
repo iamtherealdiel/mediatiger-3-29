@@ -1,24 +1,22 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
-import { supabase } from "../../lib/supabase";
 import {
-  ArrowLeft,
+  BarChart2,
+  ChevronRight,
+  Clock,
+  ExternalLink,
+  Eye,
   Play,
+  Plus,
   RefreshCw,
   Settings,
   TrendingUp,
-  Eye,
-  ChevronRight,
-  Youtube,
-  ExternalLink,
-  BarChart2,
   User,
-  Plus,
-  Clock,
   XCircle,
+  Youtube,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import NewChannelPopup from "../../components/AddNewChannel";
+import { useAuth } from "../../contexts/AuthContext";
+import { supabase } from "../../lib/supabase";
 
 interface Channel {
   url: string;
@@ -37,8 +35,11 @@ export default function ChannelManagement() {
   const [error, setError] = useState<string | null>(null);
   const [showAddChannelModal, setShowAddChannelModal] = useState(false);
   const [newChannelUrl, setNewChannelUrl] = useState("");
+
   const fetchChannels = async () => {
     try {
+      setIsLoading(true); // Ensure loading state is set at the start
+
       // Get user's linked channels
       const { data: requestData, error: requestError } = await supabase
         .from("user_requests")
@@ -46,30 +47,24 @@ export default function ChannelManagement() {
         .eq("user_id", user.id)
         .single();
 
-      console.log("requestData from user_requests:", requestData);
       if (requestError) throw requestError;
 
-      // Then get additional channels from channels table
+      const youtubeLinks = requestData?.youtube_links || [];
+      if (youtubeLinks.length === 0) {
+        setError("No channels linked to your account");
+        setIsLoading(false);
+        return;
+      }
+
+      // Fetch additional channels
       const { data: channelsData, error: channelsError } = await supabase
         .from("channels")
         .select("*")
         .eq("user_id", user.id);
 
-      console.log("channelsData from channels:", channelsData);
       if (channelsError) throw channelsError;
 
-      if (
-        !requestData?.youtube_links?.length &&
-        (!channelsData || channelsData.length === 0)
-      ) {
-        setError("No channels linked to your account");
-      }
-
-      if (!requestData[0]?.user_requests.youtube_links?.length) {
-        setError("No channels linked to your account");
-      }
-
-      // Get views data for each channel
+      // Fetch views data
       const { data: viewsData, error: viewsError } = await supabase
         .from("channel_views")
         .select("*")
@@ -79,8 +74,7 @@ export default function ChannelManagement() {
       if (viewsError) throw viewsError;
 
       // Transform data
-      let mainChannel = (requestData.youtube_links || []).map((url: string) => {
-        console.log("url from main channel ", requestData?.youtube_links);
+      const mainChannel = youtubeLinks.map((url: string) => {
         const channelViews =
           viewsData?.filter((v) => v.channel_id === url) || [];
         const currentMonthViews = channelViews[0]?.views || 0;
@@ -97,7 +91,8 @@ export default function ChannelManagement() {
           status: "approved",
         };
       });
-      let otherChannels = (channelsData || []).map((data: any) => {
+
+      const otherChannels = (channelsData || []).map((data: any) => {
         const url = data?.link;
         const channelViews =
           viewsData?.filter((v) => v.channel_id === url) || [];
@@ -115,18 +110,30 @@ export default function ChannelManagement() {
           status: data.status,
         };
       });
+
       setChannels([...mainChannel, ...otherChannels]);
+      setError(null); // Clear any previous errors
     } catch (error) {
       console.error("Error fetching channels:", error);
       setError("Failed to load channel data");
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Ensure loading state is cleared
     }
   };
-  useEffect(() => {
-    if (!user) return;
 
-    fetchChannels();
+  useEffect(() => {
+      console.log("[ChannelManagement] useEffect triggered");
+      if (user === undefined) {
+          // User data is still loading
+          return;
+      }
+      if (!user) {
+          // User is not authenticated
+          setIsLoading(false); // Stop loading if the user is not logged in
+          return;
+      }
+      console.log("User ID:", user);
+      fetchChannels();
   }, [user]);
 
   const handleAddChannel = async () => {
