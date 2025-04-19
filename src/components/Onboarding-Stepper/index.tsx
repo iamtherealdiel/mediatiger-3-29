@@ -80,10 +80,13 @@ export const verifyChannel = async (
   userId: string | null
 ): Promise<void> => {
   setIsVerifying(true);
-  console.log("[Onboarding] -> verifyChannel -> userId: ", userId);
+  console.log(
+    "[verifyChannel] Starting verification with state:",
+    JSON.stringify(channelInfo, null, 2)
+  );
 
   if (!channelUrl || !channelUrl.toLowerCase().includes("youtube")) {
-    showUniqueToast("Enter a valid YouTube link.", "error", "channel-exists");
+    showUniqueToast("Enter a valid YouTube link.", "error", "invalid-url");
     setIsVerifying(false);
     return;
   }
@@ -91,6 +94,42 @@ export const verifyChannel = async (
   const youtubeApiKey = import.meta.env.VITE_YOUTUBE_API_KEY;
 
   try {
+    // First check if channel is already registered
+    const { data: existingRequest, error: checkError } = await supabase
+      .from("user_requests")
+      .select("id")
+      .filter("youtube_links", "cs", `{"${channelUrl}"}`)
+      .filter("status", "eq", "approved")
+      .not("user_id", "eq", userId)
+      .maybeSingle();
+
+    if (checkError) throw checkError;
+
+    if (existingRequest) {
+      showUniqueToast(
+        "This YouTube channel is already registered with another account",
+        "error",
+        "channel-exists"
+      );
+      setChannelInfo((prev) => ({
+        ...prev,
+        verifiedChannels: {
+          ...prev.verifiedChannels,
+          [channelUrl]: false,
+        },
+        youtubeLinks: [...prev.youtubeLinks],
+        name: prev.name || "",
+        email: prev.email || "",
+        verificationCode: prev.verificationCode,
+      }));
+      console.log(
+        "[Onboarding] -> verifyChannel -> Channel info: ",
+        JSON.stringify(channelInfo, null, 2)
+      );
+      setIsVerifying(false);
+      return;
+    }
+
     let channelId: string | null = null;
 
     if (channelUrl.includes("@")) {

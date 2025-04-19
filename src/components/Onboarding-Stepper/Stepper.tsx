@@ -29,7 +29,7 @@ interface StepperProps {
   removeChannelField: (index: number) => void;
   handleCopyVerification: (
     setVerificationCopied: React.Dispatch<React.SetStateAction<boolean>>,
-    channelInfo: { verificationCode: string }
+    channelInfo: ChannelInfo
   ) => void;
   setIsVerifying: React.Dispatch<React.SetStateAction<boolean>>;
   setChannelInfo: React.Dispatch<React.SetStateAction<ChannelInfo>>;
@@ -123,6 +123,12 @@ export const Stepper: React.FC<StepperProps> = ({
   verifyChannel,
   setVerificationCopied,
 }) => {
+  console.log("[Stepper] Rendering Stepper with step:", step);
+  console.log(
+    "[Stepper] Rendering Stepper with channelInfo: ",
+    JSON.stringify(channelInfo, null, 2)
+  );
+
   return step === 1 ? (
     <>
       <p className="text-slate-300 mb-5">
@@ -144,15 +150,17 @@ export const Stepper: React.FC<StepperProps> = ({
 
         {(interests.channelManagement || interests.musicPartnerProgram) && (
           <div className="mt-2 pl-8 animate-fadeIn">
-            {channelInfo?.youtubeLinks?.map((link, index) => (
-              <YouTubeChannelField
-                key={index}
-                link={link}
-                index={index}
-                onChange={handleChannelInfoChange}
-                onRemove={() => removeChannelField(index)}
-              />
-            ))}
+            {channelInfo?.youtubeLinks &&
+              Array.isArray(channelInfo.youtubeLinks) &&
+              channelInfo.youtubeLinks.map((link, index) => (
+                <YouTubeChannelField
+                  key={index}
+                  link={link || ""}
+                  index={index}
+                  onChange={handleChannelInfoChange}
+                  onRemove={() => removeChannelField(index)}
+                />
+              ))}
             <button
               onClick={addChannelField}
               type="button"
@@ -196,7 +204,7 @@ export const Stepper: React.FC<StepperProps> = ({
 
               {/* Verification Status */}
               <div className="mt-4 space-y-2">
-                {channelInfo.youtubeLinks?.map(
+                {channelInfo.youtubeLinks.map(
                   (link, index) =>
                     link.trim() && (
                       <div

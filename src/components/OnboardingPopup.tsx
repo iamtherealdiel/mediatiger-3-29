@@ -50,9 +50,11 @@ export default function OnboardingPopup({
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    const code = Math.random().toString(36).substring(2, 10).toUpperCase();
-    setChannelInfo({ ...channelInfo, verificationCode: code });
-  }, []);
+    if (!channelInfo.verificationCode) {
+      const code = Math.random().toString(36).substring(2, 10).toUpperCase();
+      setChannelInfo((prev) => ({ ...prev, verificationCode: code }));
+    }
+  }, [channelInfo]); // Empty dependency array since we only want to run this once
 
   const handleInterestChange = (interest: keyof typeof interests) => {
     setInterests({ ...interests, [interest]: !interests[interest] });

@@ -39,6 +39,15 @@ interface OnboardingState {
   setVerificationCopied: (verificationCopied: boolean) => void;
 }
 
+const initialChannelInfo: ChannelInfo = {
+  name: "",
+  email: "",
+  youtubeLinks: [""],
+  verificationCode:
+    "MT" + Math.random().toString(36).substring(2, 10).toUpperCase(),
+  verifiedChannels: {},
+};
+
 export const useOnboardingStore = create<OnboardingState>((set) => ({
   step: 1,
   interests: {
@@ -52,13 +61,7 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
     website: "",
     youtubeChannels: [""],
   },
-  channelInfo: {
-    name: "",
-    email: "",
-    youtubeLinks: [""],
-    verificationCode: "",
-    verifiedChannels: {},
-  },
+  channelInfo: initialChannelInfo,
   isVerifying: false,
   isSubmitting: false,
   verificationCopied: false,
@@ -66,7 +69,20 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
   setInterests: (interests) => set({ interests }),
   setOtherInterest: (otherInterest) => set({ otherInterest }),
   setDigitalRightsInfo: (info) => set({ digitalRightsInfo: info }),
-  setChannelInfo: (info) => set({ channelInfo: info }),
+  setChannelInfo: (info) =>
+    set((state) => ({
+      channelInfo: {
+        ...state.channelInfo,
+        ...info,
+        youtubeLinks: info.youtubeLinks || state.channelInfo.youtubeLinks,
+        verificationCode:
+          info.verificationCode || state.channelInfo.verificationCode,
+        verifiedChannels: {
+          ...state.channelInfo.verifiedChannels,
+          ...(info.verifiedChannels || {}),
+        },
+      },
+    })),
   setIsVerifying: (isVerifying) => set({ isVerifying }),
   setIsSubmitting: (isSubmitting) => set({ isSubmitting }),
   setVerificationCopied: (verificationCopied) => set({ verificationCopied }),
