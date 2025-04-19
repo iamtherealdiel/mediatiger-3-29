@@ -1,21 +1,22 @@
-import React, { useEffect } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
-import Login from "./pages/Login";
-import SignUp from "./pages/SignUp";
+import { useEffect } from "react";
+import { Route, Routes, useLocation } from "react-router-dom";
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminPanel from "./pages/AdminPanel";
 import Dashboard from "./pages/Dashboard";
+import BoutiqueMonetization from "./pages/features/BoutiqueMonetization";
 import ChannelManagement from "./pages/features/ChannelManagement";
 import DigitalRights from "./pages/features/DigitalRights";
 import GlobalDistribution from "./pages/features/GlobalDistribution";
-import BoutiqueMonetization from "./pages/features/BoutiqueMonetization";
-import ProtectedRoute from "./components/ProtectedRoute";
 import HomePage from "./pages/HomePage";
-import AdminPanel from "./pages/AdminPanel";
 import LabelGrowth from "./pages/LabelGrowth";
-import ShowGrowth from "./pages/ShowGrowth";
-import Welcome from "./pages/Welcome";
+import Login from "./pages/Login";
 import Messages from "./pages/Messages";
-import { setDocumentTitle } from "./utils/titleUtils";
 import PurpleLogin from "./pages/PurpleLogin";
+import ShowGrowth from "./pages/ShowGrowth";
+import SignUp from "./pages/SignUp";
+import Welcome from "./pages/Welcome";
+import { setDocumentTitle } from "./utils/titleUtils";
+
 function App() {
   const location = useLocation();
 

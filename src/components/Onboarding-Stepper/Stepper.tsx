@@ -1,7 +1,108 @@
 import { Check, CheckCircle, Copy, X } from "lucide-react";
 import React from "react";
+import { ChannelInfo } from "../../stores/onboardingStore";
 
-export const Stepper: React.FC<any> = ({
+interface StepperProps {
+  step: number;
+  interests: {
+    channelManagement: boolean;
+    musicPartnerProgram: boolean;
+    digitalRights: boolean;
+    other: boolean;
+  };
+  channelInfo: ChannelInfo;
+  digitalRightsInfo: {
+    website: string;
+    youtubeChannels: string[];
+  };
+  otherInterest: string;
+  isVerifying: boolean;
+  verificationCopied: boolean;
+  user: { id: string; user_metadata: { full_name: string } } | null;
+  handleInterestChange: (interest: string) => void;
+  handleChannelInfoChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  setDigitalRightsInfo: React.Dispatch<
+    React.SetStateAction<{ website: string; youtubeChannels: string[] }>
+  >;
+  setOtherInterest: React.Dispatch<React.SetStateAction<string>>;
+  addChannelField: () => void;
+  removeChannelField: (index: number) => void;
+  handleCopyVerification: (
+    setVerificationCopied: React.Dispatch<React.SetStateAction<boolean>>,
+    channelInfo: { verificationCode: string }
+  ) => void;
+  setIsVerifying: React.Dispatch<React.SetStateAction<boolean>>;
+  setChannelInfo: React.Dispatch<React.SetStateAction<ChannelInfo>>;
+  verifyChannel: (
+    channelUrl: string,
+    setIsVerifying: React.Dispatch<React.SetStateAction<boolean>>,
+    channelInfo: ChannelInfo,
+    setChannelInfo: React.Dispatch<React.SetStateAction<ChannelInfo>>,
+    userId: string | null
+  ) => Promise<void>;
+  setVerificationCopied: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const InterestOption = ({
+  label,
+  isSelected,
+  onClick,
+}: {
+  label: string;
+  isSelected: boolean;
+  onClick: () => void;
+}) => (
+  <div
+    className={`p-3 rounded-lg cursor-pointer flex items-center ${
+      isSelected
+        ? "bg-indigo-600/20 border border-indigo-600/30"
+        : "bg-slate-700 border border-slate-600 hover:bg-slate-600"
+    }`}
+    onClick={onClick}
+  >
+    <div
+      className={`w-5 h-5 rounded flex items-center justify-center mr-3 ${
+        isSelected ? "bg-indigo-600 text-white" : "bg-slate-600"
+      }`}
+    >
+      {isSelected && <Check className="h-4 w-4" />}
+    </div>
+    <span className="text-white">{label}</span>
+  </div>
+);
+
+const YouTubeChannelField = ({
+  link,
+  index,
+  onChange,
+  onRemove,
+}: {
+  link: string;
+  index: number;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onRemove: () => void;
+}) => (
+  <div className="flex items-center space-x-2 mb-2">
+    <input
+      type="text"
+      name={`youtubeLink${index}`}
+      value={link}
+      onChange={onChange}
+      placeholder="Enter your YouTube channel URL"
+      className="flex-1 bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+    />
+    {index > 0 && (
+      <button
+        onClick={onRemove}
+        className="p-2 text-red-400 hover:text-red-300 hover:bg-slate-600 rounded transition-colors"
+      >
+        <X className="h-5 w-5" />
+      </button>
+    )}
+  </div>
+);
+
+export const Stepper: React.FC<StepperProps> = ({
   step,
   interests,
   channelInfo,
@@ -30,68 +131,27 @@ export const Stepper: React.FC<any> = ({
       </p>
 
       <div className="space-y-3 mb-6">
-        <div
-          className={`p-3 rounded-lg cursor-pointer flex items-center ${
-            interests.channelManagement
-              ? "bg-indigo-600/20 border border-indigo-600/30"
-              : "bg-slate-700 border border-slate-600 hover:bg-slate-600"
-          }`}
+        <InterestOption
+          label="Channel Management"
+          isSelected={interests.channelManagement}
           onClick={() => handleInterestChange("channelManagement")}
-        >
-          <div
-            className={`w-5 h-5 rounded flex items-center justify-center mr-3 ${
-              interests.channelManagement
-                ? "bg-indigo-600 text-white"
-                : "bg-slate-600"
-            }`}
-          >
-            {interests.channelManagement && <Check className="h-4 w-4" />}
-          </div>
-          <span className="text-white">Channel Management</span>
-        </div>
-
-        <div
-          className={`p-3 rounded-lg cursor-pointer flex items-center ${
-            interests.musicPartnerProgram
-              ? "bg-indigo-600/20 border border-indigo-600/30"
-              : "bg-slate-700 border border-slate-600 hover:bg-slate-600"
-          }`}
+        />
+        <InterestOption
+          label="Music Partner Program"
+          isSelected={interests.musicPartnerProgram}
           onClick={() => handleInterestChange("musicPartnerProgram")}
-        >
-          <div
-            className={`w-5 h-5 rounded flex items-center justify-center mr-3 ${
-              interests.musicPartnerProgram
-                ? "bg-indigo-600 text-white"
-                : "bg-slate-600"
-            }`}
-          >
-            {interests.musicPartnerProgram && <Check className="h-4 w-4" />}
-          </div>
-          <span className="text-white">Music Partner Program</span>
-        </div>
+        />
 
-        {/* Channel URL Prompt - Show if either program is selected */}
         {(interests.channelManagement || interests.musicPartnerProgram) && (
           <div className="mt-2 pl-8 animate-fadeIn">
             {channelInfo.youtubeLinks.map((link, index) => (
-              <div key={index} className="flex items-center space-x-2 mb-2">
-                <input
-                  type="text"
-                  name={`youtubeLink${index}`}
-                  value={link}
-                  onChange={handleChannelInfoChange}
-                  placeholder="Enter your YouTube channel URL"
-                  className="flex-1 bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                {index > 0 && (
-                  <button
-                    onClick={() => removeChannelField(index)}
-                    className="p-2 text-red-400 hover:text-red-300 hover:bg-slate-600 rounded transition-colors"
-                  >
-                    <X className="h-5 w-5" />
-                  </button>
-                )}
-              </div>
+              <YouTubeChannelField
+                key={index}
+                link={link}
+                index={index}
+                onChange={handleChannelInfoChange}
+                onRemove={() => removeChannelField(index)}
+              />
             ))}
             <button
               onClick={addChannelField}
@@ -162,8 +222,9 @@ export const Stepper: React.FC<any> = ({
                             verifyChannel(
                               link,
                               setIsVerifying,
+                              channelInfo,
                               setChannelInfo,
-                              user?.id
+                              user?.id || ""
                             )
                           }
                           disabled={isVerifying}
@@ -179,27 +240,12 @@ export const Stepper: React.FC<any> = ({
           </div>
         )}
 
-        <div
-          className={`p-3 rounded-lg cursor-pointer flex items-center ${
-            interests.digitalRights
-              ? "bg-indigo-600/20 border border-indigo-600/30"
-              : "bg-slate-700 border border-slate-600 hover:bg-slate-600"
-          }`}
+        <InterestOption
+          label="Digital Rights"
+          isSelected={interests.digitalRights}
           onClick={() => handleInterestChange("digitalRights")}
-        >
-          <div
-            className={`w-5 h-5 rounded flex items-center justify-center mr-3 ${
-              interests.digitalRights
-                ? "bg-indigo-600 text-white"
-                : "bg-slate-600"
-            }`}
-          >
-            {interests.digitalRights && <Check className="h-4 w-4" />}
-          </div>
-          <span className="text-white">Digital Rights</span>
-        </div>
+        />
 
-        {/* Digital Rights Fields */}
         {interests.digitalRights && (
           <div className="mt-2 pl-8 space-y-3 animate-fadeIn">
             <div>
@@ -228,39 +274,27 @@ export const Stepper: React.FC<any> = ({
                 YouTube Channel URLs
               </label>
               {digitalRightsInfo.youtubeChannels.map((channel, index) => (
-                <div key={index} className="flex items-center space-x-2">
-                  <input
-                    type="text"
-                    value={channel}
-                    onChange={(e) => {
-                      const newChannels = [
-                        ...digitalRightsInfo.youtubeChannels,
-                      ];
-                      newChannels[index] = e.target.value;
-                      setDigitalRightsInfo((prev) => ({
-                        ...prev,
-                        youtubeChannels: newChannels,
-                      }));
-                    }}
-                    placeholder="https://youtube.com/c/yourchannel"
-                    className="flex-1 bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
-                  {index > 0 && (
-                    <button
-                      onClick={() => {
-                        setDigitalRightsInfo((prev) => ({
-                          ...prev,
-                          youtubeChannels: prev.youtubeChannels.filter(
-                            (_, i) => i !== index
-                          ),
-                        }));
-                      }}
-                      className="p-2 text-red-400 hover:text-red-300 hover:bg-slate-600 rounded transition-colors"
-                    >
-                      <X className="h-5 w-5" />
-                    </button>
-                  )}
-                </div>
+                <YouTubeChannelField
+                  key={index}
+                  link={channel}
+                  index={index}
+                  onChange={(e) => {
+                    const newChannels = [...digitalRightsInfo.youtubeChannels];
+                    newChannels[index] = e.target.value;
+                    setDigitalRightsInfo((prev) => ({
+                      ...prev,
+                      youtubeChannels: newChannels,
+                    }));
+                  }}
+                  onRemove={() => {
+                    setDigitalRightsInfo((prev) => ({
+                      ...prev,
+                      youtubeChannels: prev.youtubeChannels.filter(
+                        (_, i) => i !== index
+                      ),
+                    }));
+                  }}
+                />
               ))}
               <button
                 onClick={() => {
@@ -279,23 +313,11 @@ export const Stepper: React.FC<any> = ({
           </div>
         )}
 
-        <div
-          className={`p-3 rounded-lg cursor-pointer flex items-center ${
-            interests.other
-              ? "bg-indigo-600/20 border border-indigo-600/30"
-              : "bg-slate-700 border border-slate-600 hover:bg-slate-600"
-          }`}
+        <InterestOption
+          label="Other"
+          isSelected={interests.other}
           onClick={() => handleInterestChange("other")}
-        >
-          <div
-            className={`w-5 h-5 rounded flex items-center justify-center mr-3 ${
-              interests.other ? "bg-indigo-600 text-white" : "bg-slate-600"
-            }`}
-          >
-            {interests.other && <Check className="h-4 w-4" />}
-          </div>
-          <span className="text-white">Other</span>
-        </div>
+        />
 
         {interests.other && (
           <div className="mt-2 pl-8">
