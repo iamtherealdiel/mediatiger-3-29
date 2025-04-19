@@ -1,8 +1,9 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { LogOut } from "lucide-react";
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { useOnboardingStore } from "../stores/onboardingStore";
 import {
   handleCopyVerification,
   handleFinalSubmit,
@@ -12,88 +13,78 @@ import {
   verifyChannel,
 } from "./Onboarding-Stepper";
 import { Stepper } from "./Onboarding-Stepper/Stepper";
-// Utility to prevent duplicate toasts
+
+interface OnboardingPopupProps {
+  isOpen: boolean;
+  onClose: () => void;
+  userId: string;
+  userEmail: string;
+}
 
 export default function OnboardingPopup({
   isOpen,
   onClose,
   userId,
   userEmail,
-}: { isOpen: boolean; onClose: () => void; userId: string; userEmail: string }) {
-  const [step, setStep] = useState(1);
-  const [interests, setInterests] = useState({
-    channelManagement: false,
-    musicPartnerProgram: false,
-    digitalRights: false,
-    other: false,
-  });
-  const [otherInterest, setOtherInterest] = useState("");
-  const [digitalRightsInfo, setDigitalRightsInfo] = useState({
-    website: "",
-    youtubeChannels: [""],
-  });
-  const [channelInfo, setChannelInfo] = useState({
-    name: "",
-    email: userEmail || "",
-    youtubeLinks: [""],
-    verificationCode: "",
-    verifiedChannels: {} as Record<string, boolean>,
-  });
-  const [showChannelPrompt, setShowChannelPrompt] = useState(false);
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [verificationCopied, setVerificationCopied] = useState(false);
+}: OnboardingPopupProps) {
+  const {
+    step,
+    interests,
+    otherInterest,
+    digitalRightsInfo,
+    channelInfo,
+    isVerifying,
+    isSubmitting,
+    verificationCopied,
+    setStep,
+    setInterests,
+    setOtherInterest,
+    setDigitalRightsInfo,
+    setChannelInfo,
+    setIsVerifying,
+    setIsSubmitting,
+    setVerificationCopied,
+  } = useOnboardingStore();
+
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
-  // Generate a random verification code when component mounts
   React.useEffect(() => {
     const code = Math.random().toString(36).substring(2, 10).toUpperCase();
-    setChannelInfo((prev) => ({ ...prev, verificationCode: code }));
+    setChannelInfo({ ...channelInfo, verificationCode: code });
   }, []);
 
   const handleInterestChange = (interest: keyof typeof interests) => {
-    setInterests((prev) => ({
-      ...prev,
-      [interest]: !prev[interest],
-    }));
-
-    // Show channel prompt when Channel Management is selected
-    if (interest === "channelManagement") {
-      setShowChannelPrompt((prev) => !prev);
-    }
+    setInterests({ ...interests, [interest]: !interests[interest] });
   };
 
   const handleChannelInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (name.startsWith("youtubeLink")) {
       const index = parseInt(name.replace("youtubeLink", ""));
-      setChannelInfo((prev) => ({
-        ...prev,
-        youtubeLinks: prev.youtubeLinks.map((link, i) =>
+      setChannelInfo({
+        ...channelInfo,
+        youtubeLinks: channelInfo.youtubeLinks.map((link, i) =>
           i === index ? value : link
         ),
-      }));
+      });
     } else {
-      setChannelInfo((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
+      setChannelInfo({ ...channelInfo, [name]: value });
     }
   };
 
   const addChannelField = () => {
-    setChannelInfo((prev) => ({
-      ...prev,
-      youtubeLinks: [...prev.youtubeLinks, ""],
-    }));
+    setChannelInfo({
+      ...channelInfo,
+      youtubeLinks: [...channelInfo.youtubeLinks, ""],
+    });
   };
 
   const removeChannelField = (index: number) => {
-    setChannelInfo((prev) => ({
-      ...prev,
-      youtubeLinks: prev.youtubeLinks.filter((_, i) => i !== index),
-    }));
+    setChannelInfo({
+      ...channelInfo,
+      youtubeLinks: channelInfo.youtubeLinks.filter((_, i) => i !== index),
+    });
   };
 
   const validateStep2 = () => {
@@ -227,7 +218,7 @@ export default function OnboardingPopup({
                         channelInfo,
                         user,
                         userEmail,
-                        onclose
+                        onClose
                       );
                     }
                   }}
