@@ -144,7 +144,7 @@ export const Stepper: React.FC<StepperProps> = ({
 
         {(interests.channelManagement || interests.musicPartnerProgram) && (
           <div className="mt-2 pl-8 animate-fadeIn">
-            {channelInfo.youtubeLinks.map((link, index) => (
+            {channelInfo?.youtubeLinks?.map((link, index) => (
               <YouTubeChannelField
                 key={index}
                 link={link}
@@ -196,7 +196,7 @@ export const Stepper: React.FC<StepperProps> = ({
 
               {/* Verification Status */}
               <div className="mt-4 space-y-2">
-                {channelInfo.youtubeLinks.map(
+                {channelInfo.youtubeLinks?.map(
                   (link, index) =>
                     link.trim() && (
                       <div
